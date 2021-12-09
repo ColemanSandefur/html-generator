@@ -1,97 +1,48 @@
+mod body;
+mod heading;
 mod paragraph;
+mod row;
+mod table;
+mod table_data;
 
+pub use body::*;
+pub use heading::*;
 pub use paragraph::*;
+pub use row::*;
+pub use table::*;
+pub use table_data::*;
+
+use crate::prelude::*;
 
 #[derive(Clone)]
 pub enum HTMLElement {
-    Table(HTMLTable),
+    Body(HTMLBody),
+    Heading(HTMLHeading),
     Row(HTMLRow),
     Paragraph(HTMLParagraph),
+    Simple(String),
+    Table(HTMLTable),
+    TableData(HTMLTableData),
+    Custom(Box<dyn HTMLRenderingClonable>),
 }
 
 impl HTMLRendering for HTMLElement {
     fn render(&self) -> String {
         match self {
+            HTMLElement::Body(b) => b.render(),
+            HTMLElement::Simple(s) => s.render(),
             HTMLElement::Table(table) => table.render(),
             HTMLElement::Row(row) => row.render(),
+            HTMLElement::TableData(d) => d.render(),
             HTMLElement::Paragraph(p) => p.render(),
+            HTMLElement::Heading(h) => h.render(),
+            HTMLElement::Custom(c) => c.render(), // A pretty bad work around, but it works enough?
         }
     }
 }
 
-pub trait HTMLRendering {
-    fn render(&self) -> String;
-}
-
-#[derive(Clone)]
-pub struct HTMLRow {
-    row: Vec<HTMLElement>,
-}
-
-impl HTMLRendering for HTMLRow {
-    fn render(&self) -> String {
-        let mut output = String::new();
-
-        output.push_str("<tr>");
-
-        for element in &self.row {
-            output.push_str(format!("<td>{}</td>", element.render()).as_str());
-        }
-
-        output.push_str("</tr>");
-
-        output
-    }
-}
-
-impl HTMLRow {
-    pub fn new() -> Self {
-        Self { row: Vec::new() }
-    }
-
-    pub fn push(&mut self, element: HTMLElement) {
-        self.row.push(element);
-    }
-}
-impl From<HTMLRow> for HTMLElement {
-    fn from(row: HTMLRow) -> Self {
-        HTMLElement::Row(row)
-    }
-}
-
-#[derive(Clone)]
-pub struct HTMLTable {
-    rows: Vec<HTMLRow>,
-}
-
-impl HTMLRendering for HTMLTable {
-    fn render(&self) -> String {
-        let mut output = String::new();
-
-        output.push_str("<table><tbody>");
-
-        for row in &self.rows {
-            output.push_str(&row.render());
-        }
-
-        output.push_str("</tbody></table>");
-
-        output
-    }
-}
-
-impl HTMLTable {
-    pub fn new() -> Self {
-        Self { rows: Vec::new() }
-    }
-
-    pub fn push(&mut self, row: HTMLRow) {
-        self.rows.push(row);
-    }
-}
-
-impl From<HTMLTable> for HTMLElement {
-    fn from(t: HTMLTable) -> Self {
-        HTMLElement::Table(t)
+impl<T: ToString> From<T> for HTMLElement {
+    fn from(s: T) -> HTMLElement {
+        HTMLElement::Simple(s.to_string())
     }
 }
