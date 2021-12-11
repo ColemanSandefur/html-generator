@@ -1,10 +1,14 @@
+use crate::attributes::Attributes;
 use crate::html_tags::HTMLElement;
 use crate::html_tags::HTMLRow;
 use crate::prelude::*;
 
 #[derive(Clone)]
 pub struct HTMLTable {
+    head: Vec<HTMLRow>,
     rows: Vec<HTMLRow>,
+
+    attributes: Attributes,
 }
 
 impl HTMLRendering for HTMLTable {
@@ -25,11 +29,19 @@ impl HTMLRendering for HTMLTable {
 
 impl HTMLTable {
     pub fn new() -> Self {
-        Self { rows: Vec::new() }
+        Self {
+            head: Vec::new(),
+            rows: Vec::new(),
+            attributes: Attributes::new(),
+        }
     }
 
     pub fn with_rows(rows: Vec<HTMLRow>) -> Self {
-        Self { rows }
+        Self {
+            head: Vec::new(),
+            rows,
+            attributes: Attributes::new(),
+        }
     }
 
     pub fn push_row(&mut self, row: HTMLRow) {
@@ -53,6 +65,10 @@ impl HTMLTable {
         self.rows.insert(index, row);
 
         old_row
+    }
+
+    pub fn get_head(&mut self, row: Vec<HTMLRow>) {
+        self.head = row;
     }
 }
 

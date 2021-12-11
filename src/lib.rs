@@ -1,3 +1,5 @@
+extern crate chrono_tz;
+pub mod attributes;
 pub mod html_tags;
 
 pub use html_tags::*;
@@ -25,6 +27,9 @@ mod tests {
 }
 
 pub mod prelude {
+    pub use html_rendering_derive::HTMLRendering;
+
+    use crate::HTMLElement;
     pub trait HTMLManipulation<T> {
         //Define these 2 functions for auto implementations of the rest
         fn get_elements(&self) -> &Vec<T>;
@@ -90,5 +95,9 @@ pub mod prelude {
         fn render(&self) -> String {
             self.clone()
         }
+    }
+
+    pub trait ToHTML {
+        fn to_html(self) -> HTMLElement;
     }
 }

@@ -1,8 +1,9 @@
 use crate::html_tags::HTMLElement;
 use crate::prelude::*;
 
-#[derive(Clone)]
+#[derive(Clone, HTMLRendering)]
 pub struct HTMLBody {
+    #[rendered_iter("body")]
     element: Vec<HTMLElement>,
 }
 
@@ -15,18 +16,6 @@ impl HTMLBody {
 
     pub fn set_content(&mut self, element: Vec<HTMLElement>) {
         self.element = element;
-    }
-}
-
-impl HTMLRendering for HTMLBody {
-    fn render(&self) -> String {
-        let mut output = String::new();
-
-        for el in &self.element {
-            output.push_str(&el.render());
-        }
-
-        format!("<body>{}</body>", &output)
     }
 }
 

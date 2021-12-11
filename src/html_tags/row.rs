@@ -1,25 +1,10 @@
 use crate::html_tags::HTMLElement;
-use crate::{prelude::*, HTMLTableData};
+use crate::prelude::*;
 
-#[derive(Clone)]
+#[derive(Clone, HTMLRendering)]
 pub struct HTMLRow {
-    element: Vec<HTMLTableData>,
-}
-
-impl HTMLRendering for HTMLRow {
-    fn render(&self) -> String {
-        let mut output = String::new();
-
-        output.push_str("<tr>");
-
-        for element in &self.element {
-            output.push_str(&element.render());
-        }
-
-        output.push_str("</tr>");
-
-        output
-    }
+    #[rendered_iter("tr")]
+    element: Vec<HTMLElement>,
 }
 
 impl HTMLRow {
@@ -36,18 +21,18 @@ impl From<HTMLRow> for HTMLElement {
     }
 }
 
-impl From<Vec<HTMLTableData>> for HTMLRow {
-    fn from(row: Vec<HTMLTableData>) -> Self {
+impl From<Vec<HTMLElement>> for HTMLRow {
+    fn from(row: Vec<HTMLElement>) -> Self {
         Self { element: row }
     }
 }
 
-impl HTMLManipulation<HTMLTableData> for HTMLRow {
-    fn get_elements(&self) -> &Vec<HTMLTableData> {
+impl HTMLManipulation<HTMLElement> for HTMLRow {
+    fn get_elements(&self) -> &Vec<HTMLElement> {
         &self.element
     }
 
-    fn get_mut_elements(&mut self) -> &mut Vec<HTMLTableData> {
+    fn get_mut_elements(&mut self) -> &mut Vec<HTMLElement> {
         &mut self.element
     }
 }

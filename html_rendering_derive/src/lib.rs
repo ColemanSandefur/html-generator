@@ -35,14 +35,17 @@ fn get_rendered_field(fields: &Punctuated<Field, Comma>) -> RenderedField {
             };
             let identifier = segment.ident.to_string();
 
-            let tokens = attribute.parse_args::<LitStr>().unwrap();
+            let new_tag = match attribute.parse_args::<LitStr>() {
+                Ok(token) => token.value(),
+                Err(_) => String::new(),
+            };
             let new = match identifier.as_str() {
                 "rendered" => {
-                    tag = tokens.value();
+                    tag = new_tag;
                     Some((field.clone(), RenderType::Normal))
                 }
                 "rendered_iter" => {
-                    tag = tokens.value();
+                    tag = new_tag;
                     Some((field.clone(), RenderType::Iter))
                 }
                 _ => None,

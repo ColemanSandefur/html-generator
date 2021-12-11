@@ -1,26 +1,15 @@
 use crate::html_tags::HTMLElement;
 use crate::prelude::*;
 
-#[derive(Clone)]
+#[derive(Clone, HTMLRendering)]
 pub struct HTMLParagraph {
+    #[rendered_iter("p")]
     element: Vec<HTMLElement>,
 }
 
 impl HTMLParagraph {
     pub fn new(element: Vec<HTMLElement>) -> Self {
         Self { element }
-    }
-}
-
-impl HTMLRendering for HTMLParagraph {
-    fn render(&self) -> String {
-        let mut output = String::new();
-
-        for el in &self.element {
-            output.push_str(&el.render());
-        }
-
-        format!("<p>{}</p>", &output)
     }
 }
 
