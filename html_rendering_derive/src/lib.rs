@@ -6,7 +6,7 @@ use syn::token::Comma;
 use syn::Field;
 use syn::{self, LitStr};
 
-#[proc_macro_derive(HTMLRendering, attributes(rendered, rendered_iter))]
+#[proc_macro_derive(HTMLRendering, attributes(rendered, rendered_iter, attributes))]
 pub fn html_rendering_derive(item: TokenStream) -> TokenStream {
     let tree = syn::parse(item).unwrap();
 
@@ -70,6 +70,33 @@ fn get_rendered_field(fields: &Punctuated<Field, Comma>) -> RenderedField {
     }
 }
 
+fn get_attributes_field(fields: &Punctuated<Field, Comma>) -> Option<Field> {
+    let mut output = None;
+    for field in fields {
+        for attribute in &field.attrs {
+            let segment = match attribute.path.segments.first() {
+                Some(segment) => segment,
+                None => continue,
+            };
+            let identifier = segment.ident.to_string();
+
+            let new = match identifier.as_str() {
+                "attributes" => Some(field.clone()),
+                _ => None,
+            };
+
+            if new.is_some() {
+                match output.is_some() {
+                    true => panic!("Only one field can be assigned #[attributes]"),
+                    false => output = new,
+                }
+            }
+        }
+    }
+
+    output
+}
+
 fn impl_html_rendering(tree: &syn::DeriveInput) -> TokenStream {
     let name = &tree.ident;
 
@@ -81,24 +108,54 @@ fn impl_html_rendering(tree: &syn::DeriveInput) -> TokenStream {
                 tag,
             } = get_rendered_field(&fields.named);
             let identifier = printed_field.ident.unwrap();
+            let attributes = get_attributes_field(&fields.named);
 
-            let str_lit = format!("<{}>{{}}</{}>", &tag, &tag);
-            let str_lit = str_lit.as_str();
+            let func = match attributes {
+                // If attributes are present
+                Some(attributes) => {
+                    let attributes_identifier = attributes.ident.unwrap();
+                    match render_type {
+                        RenderType::Normal => {
+                            let str_lit = format!("<{} {{}}><{{}}</{}>", &tag, &tag);
+                            let str_lit = str_lit.as_str();
 
-            let func = match render_type {
-                RenderType::Normal => {
-                    quote! {
-                        format!(#str_lit, self.#identifier.render())
+                            quote! {
+                                format!(#str_lit, self.#attributes_identifier.render(), self.#identifier.render())
+                            }
+                        }
+                        RenderType::Iter => {
+                            quote! {
+                                let mut output = format!("<{} {}>", #tag, self.#attributes_identifier.render());
+                                for item in &self.#identifier {
+                                    output.push_str(&item.render());
+                                }
+                                output.push_str(&format!("</{}>", #tag));
+                                output
+                            }
+                        }
                     }
                 }
-                RenderType::Iter => {
-                    quote! {
-                        let mut output = format!("<{}>", #tag);
-                        for item in &self.#identifier {
-                            output.push_str(&item.render());
+                // No attributes
+                None => {
+                    let str_lit = format!("<{}>{{}}</{}>", &tag, &tag);
+                    let str_lit = str_lit.as_str();
+
+                    match render_type {
+                        RenderType::Normal => {
+                            quote! {
+                                format!(#str_lit, self.#identifier.render())
+                            }
                         }
-                        output.push_str(&format!("</{}>", #tag));
-                        output
+                        RenderType::Iter => {
+                            quote! {
+                                let mut output = format!("<{}>", #tag);
+                                for item in &self.#identifier {
+                                    output.push_str(&item.render());
+                                }
+                                output.push_str(&format!("</{}>", #tag));
+                                output
+                            }
+                        }
                     }
                 }
             };

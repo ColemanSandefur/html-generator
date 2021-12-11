@@ -1,3 +1,4 @@
+use crate::attributes::Attributes;
 use crate::html_tags::HTMLElement;
 use crate::prelude::*;
 
@@ -5,17 +6,28 @@ use crate::prelude::*;
 pub struct HTMLBody {
     #[rendered_iter("body")]
     element: Vec<HTMLElement>,
+
+    #[attributes]
+    attributes: Attributes,
 }
 
 impl HTMLBody {
     pub fn new() -> Self {
         Self {
             element: Vec::new(),
+            attributes: Attributes::new(),
         }
     }
 
     pub fn set_content(&mut self, element: Vec<HTMLElement>) {
         self.element = element;
+    }
+
+    pub fn get_attributes(&self) -> &Attributes {
+        &self.attributes
+    }
+    pub fn get_mut_attributes(&mut self) -> &mut Attributes {
+        &mut self.attributes
     }
 }
 
@@ -27,7 +39,10 @@ impl From<HTMLBody> for HTMLElement {
 
 impl From<Vec<HTMLElement>> for HTMLBody {
     fn from(element: Vec<HTMLElement>) -> Self {
-        Self { element }
+        Self {
+            element,
+            attributes: Attributes::new(),
+        }
     }
 }
 

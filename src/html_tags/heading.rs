@@ -1,3 +1,4 @@
+use crate::attributes::Attributes;
 use crate::html_tags::HTMLElement;
 use crate::prelude::*;
 
@@ -6,6 +7,8 @@ pub struct HTMLHeading {
     element: Vec<HTMLElement>,
 
     strength: u8,
+
+    attributes: Attributes,
 }
 
 impl HTMLHeading {
@@ -13,15 +16,26 @@ impl HTMLHeading {
         Self {
             element: Vec::new(),
             strength,
+            attributes: Attributes::new(),
         }
     }
 
     pub fn new_with_content(strength: u8, element: Vec<HTMLElement>) -> Self {
-        Self { element, strength }
+        Self {
+            element,
+            strength,
+            attributes: Attributes::new(),
+        }
     }
 
     pub fn set_content(&mut self, element: Vec<HTMLElement>) {
         self.element = element;
+    }
+    pub fn get_attributes(&self) -> &Attributes {
+        &self.attributes
+    }
+    pub fn get_mut_attributes(&mut self) -> &mut Attributes {
+        &mut self.attributes
     }
 }
 
@@ -33,7 +47,13 @@ impl HTMLRendering for HTMLHeading {
             output.push_str(&el.render());
         }
 
-        format!("<h{}>{}</h{}>", self.strength, &output, self.strength)
+        format!(
+            "<h{} {}>{}</h{}>",
+            self.strength,
+            self.attributes.render(),
+            &output,
+            self.strength
+        )
     }
 }
 
@@ -48,6 +68,7 @@ impl From<Vec<HTMLElement>> for HTMLHeading {
         Self {
             element,
             strength: 1,
+            attributes: Attributes::new(),
         }
     }
 }

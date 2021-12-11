@@ -1,3 +1,4 @@
+use crate::attributes::Attributes;
 use crate::html_tags::HTMLElement;
 use crate::prelude::*;
 use chrono::DateTime;
@@ -9,6 +10,8 @@ pub struct HTMLTime {
     element: DateTime<Tz>,
     time_zone: Tz,
     format: String,
+
+    attributes: Attributes,
 }
 
 impl HTMLTime {
@@ -19,13 +22,21 @@ impl HTMLTime {
             element,
             time_zone,
             format,
+            attributes: Attributes::new(),
         }
+    }
+
+    pub fn get_attributes(&self) -> &Attributes {
+        &self.attributes
+    }
+    pub fn get_mut_attributes(&mut self) -> &mut Attributes {
+        &mut self.attributes
     }
 }
 
 impl HTMLRendering for HTMLTime {
     fn render(self: &Self) -> String {
-        let mut output = String::from("<time>");
+        let mut output = format!("<time {}>", self.attributes.render());
 
         let format = self.element.format(&self.format);
         output.push_str(&format!("{}", format));

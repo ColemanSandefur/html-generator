@@ -1,3 +1,4 @@
+use crate::attributes::Attributes;
 use crate::html_tags::HTMLElement;
 use crate::prelude::*;
 
@@ -5,13 +6,24 @@ use crate::prelude::*;
 pub struct HTMLRow {
     #[rendered_iter("tr")]
     element: Vec<HTMLElement>,
+
+    #[attributes]
+    attributes: Attributes,
 }
 
 impl HTMLRow {
     pub fn new() -> Self {
         Self {
             element: Vec::new(),
+            attributes: Attributes::new(),
         }
+    }
+
+    pub fn get_attributes(&self) -> &Attributes {
+        &self.attributes
+    }
+    pub fn get_mut_attributes(&mut self) -> &mut Attributes {
+        &mut self.attributes
     }
 }
 
@@ -23,7 +35,10 @@ impl From<HTMLRow> for HTMLElement {
 
 impl From<Vec<HTMLElement>> for HTMLRow {
     fn from(row: Vec<HTMLElement>) -> Self {
-        Self { element: row }
+        Self {
+            element: row,
+            attributes: Attributes::new(),
+        }
     }
 }
 

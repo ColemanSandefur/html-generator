@@ -81,14 +81,16 @@ pub mod prelude {
         fn clone_html(self: &Self) -> Box<dyn HTMLRenderingClonable>;
     }
 
+    impl<T: HTMLRendering + Clone + 'static> HTMLRenderingClonable for T {
+        fn clone_html(self: &Self) -> Box<dyn HTMLRenderingClonable> {
+            Box::new(self.clone())
+        }
+    }
+
     impl Clone for Box<dyn HTMLRenderingClonable> {
         fn clone(&self) -> Self {
             self.clone_html()
         }
-    }
-
-    pub trait HTMLCustom: Clone {
-        fn render(self: &Self) -> String;
     }
 
     impl HTMLRendering for String {

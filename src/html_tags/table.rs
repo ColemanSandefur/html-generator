@@ -11,22 +11,6 @@ pub struct HTMLTable {
     attributes: Attributes,
 }
 
-impl HTMLRendering for HTMLTable {
-    fn render(&self) -> String {
-        let mut output = String::new();
-
-        output.push_str("<table><tbody>");
-
-        for row in &self.rows {
-            output.push_str(&row.render());
-        }
-
-        output.push_str("</tbody></table>");
-
-        output
-    }
-}
-
 impl HTMLTable {
     pub fn new() -> Self {
         Self {
@@ -34,6 +18,13 @@ impl HTMLTable {
             rows: Vec::new(),
             attributes: Attributes::new(),
         }
+    }
+
+    pub fn get_attributes(&self) -> &Attributes {
+        &self.attributes
+    }
+    pub fn get_mut_attributes(&mut self) -> &mut Attributes {
+        &mut self.attributes
     }
 
     pub fn with_rows(rows: Vec<HTMLRow>) -> Self {
@@ -69,6 +60,20 @@ impl HTMLTable {
 
     pub fn get_head(&mut self, row: Vec<HTMLRow>) {
         self.head = row;
+    }
+}
+
+impl HTMLRendering for HTMLTable {
+    fn render(&self) -> String {
+        let mut output = format!("<table {}><tbody>", self.attributes.render());
+
+        for row in &self.rows {
+            output.push_str(&row.render());
+        }
+
+        output.push_str("</tbody></table>");
+
+        output
     }
 }
 

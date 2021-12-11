@@ -1,3 +1,4 @@
+use crate::attributes::Attributes;
 use crate::html_tags::HTMLElement;
 use crate::prelude::*;
 
@@ -5,17 +6,30 @@ use crate::prelude::*;
 pub struct HTMLTableData {
     #[rendered_iter("td")]
     element: Vec<HTMLElement>,
+
+    #[attributes]
+    attributes: Attributes,
 }
 
 impl HTMLTableData {
     pub fn new() -> Self {
         Self {
             element: Vec::new(),
+            attributes: Attributes::new(),
         }
     }
 
     pub fn with_elements(element: Vec<HTMLElement>) -> Self {
-        Self { element }
+        Self {
+            element,
+            attributes: Attributes::new(),
+        }
+    }
+    pub fn get_attributes(&self) -> &Attributes {
+        &self.attributes
+    }
+    pub fn get_mut_attributes(&mut self) -> &mut Attributes {
+        &mut self.attributes
     }
 }
 
@@ -37,6 +51,9 @@ impl From<HTMLTableData> for HTMLElement {
 
 impl From<HTMLElement> for HTMLTableData {
     fn from(e: HTMLElement) -> Self {
-        Self { element: vec![e] }
+        Self {
+            element: vec![e],
+            attributes: Attributes::new(),
+        }
     }
 }
