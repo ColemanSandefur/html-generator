@@ -12,15 +12,31 @@ pub struct HTMLTableHeader {
 }
 
 impl HTMLTableHeader {
-    pub fn new(element: Vec<HTMLElement>) -> Self {
+    pub fn new() -> Self {
         Self {
-            element,
+            element: Vec::new(),
             attributes: Attributes::new(),
         }
     }
+
+    pub fn with_element<T: Into<HTMLElement>>(element: T) -> Self {
+        Self {
+            element: vec![element.into()],
+            attributes: Attributes::new(),
+        }
+    }
+
+    pub fn with_elements(elements: Vec<HTMLElement>) -> Self {
+        Self {
+            element: elements,
+            attributes: Attributes::new(),
+        }
+    }
+
     pub fn get_attributes(&self) -> &Attributes {
         &self.attributes
     }
+
     pub fn get_mut_attributes(&mut self) -> &mut Attributes {
         &mut self.attributes
     }

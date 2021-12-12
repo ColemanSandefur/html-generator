@@ -17,12 +17,12 @@ mod tests {
 
     #[test]
     fn paragraph_tester() {
-        let mut p = HTMLParagraph::new(vec!["Hello world".into()]);
+        let mut p = HTMLParagraph::with_elements(vec!["Hello world".into()]);
 
         p.push_element("!".into());
 
-        assert_eq!("<p>Hello world!</p>", p.render());
-        assert_ne!("<p>HELLO WORLD!</p>", p.render());
+        assert_eq!("<p >Hello world!</p>", p.render());
+        assert_ne!("<p >HELLO WORLD!</p>", p.render());
     }
 }
 

@@ -12,9 +12,23 @@ pub struct HTMLParagraph {
 }
 
 impl HTMLParagraph {
-    pub fn new(element: Vec<HTMLElement>) -> Self {
+    pub fn new() -> Self {
         Self {
-            element,
+            element: Vec::new(),
+            attributes: Attributes::new(),
+        }
+    }
+
+    pub fn with_element<T: Into<HTMLElement>>(element: T) -> Self {
+        Self {
+            element: vec![element.into()],
+            attributes: Attributes::new(),
+        }
+    }
+
+    pub fn with_elements(elements: Vec<HTMLElement>) -> Self {
+        Self {
+            element: elements,
             attributes: Attributes::new(),
         }
     }
@@ -35,13 +49,13 @@ impl From<HTMLParagraph> for HTMLElement {
 
 impl From<String> for HTMLParagraph {
     fn from(s: String) -> Self {
-        HTMLParagraph::new(vec![s.into()])
+        HTMLParagraph::with_elements(vec![s.into()])
     }
 }
 
 impl From<&str> for HTMLParagraph {
     fn from(s: &str) -> Self {
-        HTMLParagraph::new(vec![s.into()])
+        HTMLParagraph::with_elements(vec![s.into()])
     }
 }
 

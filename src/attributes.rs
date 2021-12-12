@@ -76,15 +76,27 @@ impl HTMLRendering for Attributes {
             })
             .collect();
 
+        let style_str = match style_str.len() {
+            x if x == 0 => String::new(),
+            _ => format!("style=\"{}\"", style_str),
+        };
+
         let class: String = self
             .class
             .iter()
             .flat_map(|s| s.chars().collect::<Vec<_>>())
             .collect();
 
-        format!(
-            "style=\"{}\" class=\"{}\" id=\"{}\"",
-            style_str, class, &self.id
-        )
+        let class = match class.len() {
+            x if x == 0 => String::new(),
+            _ => format!("class=\"{}\"", class),
+        };
+
+        let id = match self.id.len() {
+            x if x == 0 => String::new(),
+            _ => format!("id=\"{}\"", &self.id),
+        };
+
+        format!("{}{}{}", style_str, class, id)
     }
 }

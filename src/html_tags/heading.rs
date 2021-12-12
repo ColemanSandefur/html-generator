@@ -20,9 +20,17 @@ impl HTMLHeading {
         }
     }
 
-    pub fn new_with_content(strength: u8, element: Vec<HTMLElement>) -> Self {
+    pub fn with_element<T: Into<HTMLElement>>(strength: u8, element: T) -> Self {
         Self {
-            element,
+            element: vec![element.into()],
+            strength,
+            attributes: Attributes::new(),
+        }
+    }
+
+    pub fn with_elements(strength: u8, elements: Vec<HTMLElement>) -> Self {
+        Self {
+            element: elements,
             strength,
             attributes: Attributes::new(),
         }

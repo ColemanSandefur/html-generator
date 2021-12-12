@@ -19,12 +19,20 @@ impl HTMLTableData {
         }
     }
 
-    pub fn with_elements(element: Vec<HTMLElement>) -> Self {
+    pub fn with_element<T: Into<HTMLElement>>(element: T) -> Self {
         Self {
-            element,
+            element: vec![element.into()],
             attributes: Attributes::new(),
         }
     }
+
+    pub fn with_elements(elements: Vec<HTMLElement>) -> Self {
+        Self {
+            element: elements,
+            attributes: Attributes::new(),
+        }
+    }
+
     pub fn get_attributes(&self) -> &Attributes {
         &self.attributes
     }

@@ -27,6 +27,14 @@ impl HTMLTable {
         &mut self.attributes
     }
 
+    pub fn with_row(row: HTMLRow) -> Self {
+        Self {
+            head: Vec::new(),
+            rows: vec![row],
+            attributes: Attributes::new(),
+        }
+    }
+
     pub fn with_rows(rows: Vec<HTMLRow>) -> Self {
         Self {
             head: Vec::new(),
@@ -58,7 +66,11 @@ impl HTMLTable {
         old_row
     }
 
-    pub fn get_head(&mut self, row: Vec<HTMLRow>) {
+    pub fn get_head(&mut self) -> &mut Vec<HTMLRow> {
+        &mut self.head
+    }
+
+    pub fn set_head(&mut self, row: Vec<HTMLRow>) {
         self.head = row;
     }
 }
@@ -66,6 +78,10 @@ impl HTMLTable {
 impl HTMLRendering for HTMLTable {
     fn render(&self) -> String {
         let mut output = format!("<table {}><tbody>", self.attributes.render());
+
+        for row in &self.head {
+            output.push_str(&row.render());
+        }
 
         for row in &self.rows {
             output.push_str(&row.render());

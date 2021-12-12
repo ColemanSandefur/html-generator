@@ -54,6 +54,11 @@ impl ToHTML for String {
         HTMLElement::Simple(self)
     }
 }
+impl ToHTML for &String {
+    fn to_html(self) -> HTMLElement {
+        HTMLElement::Simple(self.to_string())
+    }
+}
 impl ToHTML for &str {
     fn to_html(self) -> HTMLElement {
         HTMLElement::Simple(self.into())
